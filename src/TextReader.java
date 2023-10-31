@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class TextReader {
@@ -23,10 +22,24 @@ public class TextReader {
 
 
     //Functions
+
+    //Extracts words from paragraphs and then adds it to the file
+    public static void wordExtract(String text){
+        wb.fileCheck("word");
+        LinkedList<TextReader> list = new LinkedList<>();
+
+        String[] words = text.split("[\\s]+");
+        for (String word : words){
+            word = word.replaceAll("[^a-zA-Z0-9'’]", "");
+            if (!word.isEmpty()) {
+                addWordToFile(word, list);
+            }
+        }
+    }
+
     //Adds words to the file
-    //TODO: Make it so that adding duplicate words isn't allowed when running this method again
     public static void addWordToFile(String word, LinkedList<TextReader> list){
-        wb.readFromFile(list);
+        wb.readDataFromFile(list);
 
         boolean isNewWord = true;
 
@@ -45,24 +58,10 @@ public class TextReader {
             try {
                 wb.fileCheck("word");
                 wb.writeWordToFile(word + "\n");
+                System.out.println("\""+word+"\" is added!");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    //Extracts words from paragraphs and then adds it to the file
-    public static LinkedList<TextReader> wordExtract(String text){
-        wb.fileCheck("word");
-        LinkedList<TextReader> list = new LinkedList<>();
-
-        String[] words = text.split("[\\s]+");
-        for (String word : words){
-            word = word.replaceAll("[^a-zA-Z0-9'’]", "");
-            if (!word.isEmpty()) {
-                addWordToFile(word, list);
-            }
-        }
-        return list;
     }
 }
