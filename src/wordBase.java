@@ -1,9 +1,12 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 public class wordBase {
@@ -18,6 +21,11 @@ public class wordBase {
     public wordBase(String filename){
         fileCheck(filename);
         file = new File(filename);
+    }
+
+    public wordBase(){
+        fileCheck("word.csv");
+        file = new File("word.csv");
     }
 
     //Appends strings to file
@@ -77,7 +85,7 @@ public class wordBase {
     //Checks if the file exists or not, and if it doesn't it creates the file and the directory
     public void fileCheck(String filename) {
         try {
-            String dbFilePath = executablePath + "Word Decks/"+filename+".csv";
+            String dbFilePath = executablePath + "Word Decks/"+filename;
             this.file = new File(dbFilePath);
 
             if (!file.exists()) {
@@ -94,8 +102,9 @@ public class wordBase {
     }
 
     // Function to fetch the definition with the api
-    public String fetchDefinition(String word) {
+    public List<String> fetchDefinition(String word) {
         //Gets the API url and passes the received word on to it
+        List<String> definitionList = new ArrayList<>();
         String apiUrl = "https://api.dictionaryapi.dev/api/v2/entries/en/" + word;
         StringBuilder response = new StringBuilder();
 
@@ -116,32 +125,38 @@ public class wordBase {
 
                 bRead.close();
             } else {
-                // Handle HTTP error (e.g., by showing an error message in your GUI)
-                return "Error: Unable to fetch definition";
+                // Handle HTTP error
+                definitionList.add("Error: Unable to fetch definition");
+                return definitionList;
             }
 
             JSONArray jsonArray = new JSONArray(response.toString());
 
-            // Gets the first definition found in the string parsed
-            // TODO: When the popup window is made, make it so that it lists every definition found instead
+            // Handles receiving the definitions and puts them into a JSONArray to add into the list
             if (jsonArray.length() > 0) {
                 JSONObject firstEntry = jsonArray.getJSONObject(0);
                 JSONArray meanings = firstEntry.getJSONArray("meanings");
-                if (meanings.length() > 0) {
-                    JSONObject firstMeaning = meanings.getJSONObject(0);
-                    JSONArray definitions = firstMeaning.getJSONArray("definitions");
-                    if (definitions.length() > 0) {
-                        JSONObject firstDefinition = definitions.getJSONObject(0);
-                        return firstDefinition.getString("definition");
+
+                //Adds every definition into the list
+                for(int i = 0; i < meanings.length(); i++){
+                    JSONObject meaning = meanings.getJSONObject(i);
+                    JSONArray definitions = meaning.getJSONArray("definitions");
+
+                    for (int j = 0; j < definitions.length(); j++){
+                        JSONObject definition = definitions.getJSONObject(j);
+                        definitionList.add(definition.getString("definition"));
                     }
                 }
+                // Handle the case where there is no definition
+                if (definitionList.isEmpty()){
+                    definitionList.add("No definitions found");
+                }
             }
-
-            // Handle the case where there is no definition
-            return "No definition found";
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error: Unable to fetch definition";
+            definitionList.add("Error: Unable to fetch definition");
         }
+
+        return definitionList;
     }
 }

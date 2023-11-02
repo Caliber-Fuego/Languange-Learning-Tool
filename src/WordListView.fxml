@@ -45,7 +45,7 @@
       </VBox>
         <Button fx:id="wordListButton" layoutX="14.0" layoutY="185.0" mnemonicParsing="false" onAction="#onWordListClick" prefHeight="30.0" prefWidth="74.0" text="Word List" />
         <Button fx:id="addWordButton" layoutX="14.0" layoutY="259.0" mnemonicParsing="false" onAction="#onTextReadClick" prefHeight="30.0" prefWidth="74.0" text="Add Word" />
-      <ComboBox layoutX="475.0" layoutY="54.0" prefHeight="26.0" prefWidth="118.0" />
+      <ComboBox fx:id="wordListCBox" layoutX="475.0" layoutY="54.0" prefHeight="26.0" prefWidth="118.0" />
       <Label layoutX="475.0" layoutY="36.0" text="Word Lists:" />
       <Label fx:id="testLabel" layoutX="123.0" layoutY="6.0" text="Search:" />
       <TextField layoutX="123.0" layoutY="24.0" />

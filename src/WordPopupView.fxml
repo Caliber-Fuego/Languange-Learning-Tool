@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="WordPopupController">
+   <content>
+      <AnchorPane fx:id="anchorPane" prefHeight="310.0" prefWidth="460.0">
+         <children>
+            <Label fx:id="labelWord" layoutX="14.0" layoutY="14.0" prefHeight="24.0" prefWidth="82.0" text="Word">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="labelDefinition" layoutX="27.0" layoutY="50.0" maxHeight="1.7976931348623157E308" maxWidth="410.0" text="Definition">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </content>
+</ScrollPane>
