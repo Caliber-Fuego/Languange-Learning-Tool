@@ -1,3 +1,5 @@
+package Controller;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +15,7 @@ public class FlashcardController {
 
     @FXML
     protected void onWordListClick() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("WordListView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/WordListView.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
 
@@ -24,7 +26,7 @@ public class FlashcardController {
     @FXML
     protected void onTextReadClick() throws IOException {
         // Load the TextReader.fxml file
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TextReaderView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/TextReaderView.fxml"));
         Parent root;
         try {
             root = loader.load();
@@ -42,7 +44,7 @@ public class FlashcardController {
     @FXML
     protected void onFlashcardClick() throws IOException {
         // Load the TextReader.fxml file
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FlashcardView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/FlashcardView.fxml"));
         Parent root;
         try {
             root = loader.load();

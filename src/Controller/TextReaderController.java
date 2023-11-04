@@ -1,3 +1,7 @@
+package Controller;
+
+import Model.TextReader;
+import Model.wordBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -5,24 +9,27 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 
 
 public class TextReaderController {
     TextReader read = new TextReader(null);
+    wordBase wb = new wordBase("");
 
-    @FXML private TextField txtReadField;
-    @FXML private Button addWordButton, wordListButton, flashcardButton, createButton;
-    @FXML private ComboBox wordListCBox;
+
+    @FXML private TextArea txtReadField;
+    @FXML private Button addWordButton, wordListButton, flashcardButton, createButton, deleteButton;
+    @FXML private ComboBox wordListCBox, langCBox;
 
     public void initialize() {
         cBoxList();
+        lBoxList();
     }
 
     public void cBoxList(){
@@ -51,15 +58,27 @@ public class TextReaderController {
         }
     }
 
+    public void lBoxList(){
+        ObservableList<String> languageList = FXCollections.observableArrayList();
+        languageList.add("English");
+        languageList.add("Japanese");
+
+        langCBox.setItems(languageList);
+        langCBox.setValue(languageList.get(0));
+    }
+
     @FXML
     protected void onTextAddClick(){
-        read.wordExtract(txtReadField.getText(), wordListCBox.getValue().toString());
+        String lang = languageList();
+
+        String hold = TextReader.wordExtract(txtReadField.getText(), wordListCBox.getValue().toString(), lang);
+        popupNewWordsShow(hold);
     }
 
     @FXML
     protected void onWordListClick() throws IOException {
         // Load the TextReader.fxml file
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("WordListView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/WordListView.fxml"));
         Parent root;
         try {
             root = loader.load();
@@ -77,7 +96,7 @@ public class TextReaderController {
     @FXML
     protected void onTextReadClick() throws IOException {
         // Load the TextReader.fxml file
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TextReaderView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/TextReaderView.fxml"));
         Parent root;
         try {
             root = loader.load();
@@ -95,7 +114,7 @@ public class TextReaderController {
     @FXML
     protected void onFlashcardClick() throws IOException {
         // Load the TextReader.fxml file
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FlashcardView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/FlashcardView.fxml"));
         Parent root;
         try {
             root = loader.load();
@@ -112,12 +131,29 @@ public class TextReaderController {
 
     @FXML
     protected void onCreateListClick(){
-        popupShow();
+        popupCreateShow();
     }
 
-    public void popupShow() {
+    @FXML
+    protected void onDeleteFileClick(){
+        String selectedFile = wordListCBox.getValue().toString();
+
+        int input = JOptionPane.showConfirmDialog(null, "Delete file "+selectedFile+"?");
+
+        switch (input){
+            case 0:
+                wb.fileDelete(selectedFile);
+                cBoxList();
+                JOptionPane.showMessageDialog(null, "File deleted!");
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void popupCreateShow() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("WordListCreatePopup.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/WordListCreatePopup.fxml"));
             Parent root = loader.load();
 
             // Create a new Stage for the popup
@@ -133,5 +169,45 @@ public class TextReaderController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void popupNewWordsShow(String text){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/WordAddedPopupView.fxml"));
+            Parent root = loader.load();
+            WordAddedPopupController wordAddedPopupController = loader.getController();
+
+            //Sets the text for both the word and definition
+            if(!(text == null)){
+                wordAddedPopupController.setTextArea(text);
+            }else {
+                wordAddedPopupController.setTextArea("No new words added!");
+            }
+
+
+            // Create a new Stage for the popup
+            Stage popupStage = new Stage();
+            popupStage.setScene(new Scene(root));
+
+            // Show the popup
+            popupStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String languageList(){
+        String lang = langCBox.getValue().toString();
+
+        switch (lang){
+            case "English":
+                lang = "en";
+                break;
+            case "Japanese":
+                lang = "jp";
+                break;
+        }
+
+        return lang;
     }
 }

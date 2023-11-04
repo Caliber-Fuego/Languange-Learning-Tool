@@ -1,9 +1,11 @@
+package Model;
+
 import java.util.LinkedList;
 
 public class TextReader {
 
     //Properties
-    private String word;
+    private String word, language;
     private TextReader next;
     static wordBase wb = new wordBase("");
 
@@ -13,33 +15,42 @@ public class TextReader {
         this.next = null;
     }
 
+    public TextReader(){
+        this.word = "";
+        this.next = null;
+    }
+
     //Getters
     public String getWord() { return word; }
     public TextReader getNext() { return next; }
 
     //Setters
+    public void setWord(String word) { this.word = word; }
     public void setNext(TextReader next) { this.next = next; }
 
 
     //Functions
-
     //Extracts words from paragraphs and then adds it to the file
-    public static void wordExtract(String text, String filename){
+    public static String wordExtract(String text, String filename, String language){
         wb.fileCheck(filename);
+        String hold = "";
         LinkedList<TextReader> list = new LinkedList<>();
 
-        String[] words = text.split("[\\s]+");
+        String[] words = text.split("[\\s、。]+");
         for (String word : words){
-            word = word.replaceAll("[^a-zA-Z0-9'’]", "");
+            word = word.replaceAll("[^a-zA-Z0-9'’ぁ-んァ-ヶー一-龠々〆ヵヶ]", "");
             if (!word.isEmpty()) {
-                addWordToFile(word, list, filename);
+                hold += addWordToFile(word, list, filename, language);
             }
         }
+
+        return hold;
     }
 
     //Adds words to the file
-    public static void addWordToFile(String word, LinkedList<TextReader> list, String filename){
+    public static String addWordToFile(String word, LinkedList<TextReader> list, String filename, String language){
         wb.readDataFromFile(list);
+        String hold = "";
 
         boolean isNewWord = true;
 
@@ -60,12 +71,15 @@ public class TextReader {
             list.addFirst(newNode);
             try {
                 wb.fileCheck(filename);
-                wb.writeWordToFile(word + "\n");
+                hold = list.getFirst().getWord();
+                wb.writeWordToFile(list.getFirst().getWord()+","+language+"\n");
                 //TODO: turn this into a popup and have it list the new words added
-                System.out.println("\""+word+"\" is added!");
+                System.out.println("\""+list.getFirst().getWord()+"\" is added!");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        return hold+"\n";
     }
 }

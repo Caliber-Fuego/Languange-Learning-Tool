@@ -1,6 +1,5 @@
-import javafx.fxml.FXML;
+import Model.TextReader;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -14,7 +13,7 @@ public class Main extends Application{
     private BorderPane rootLayout;
 
     public void start(Stage stage) throws IOException{
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("TextReaderView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("View/TextReaderView.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
         stage.setTitle("Test!");
         stage.setScene(scene);
