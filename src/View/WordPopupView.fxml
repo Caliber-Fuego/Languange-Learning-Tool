@@ -19,6 +19,11 @@
                   <Font size="15.0" />
                </font>
             </Label>
+            <Label fx:id="labelHiragana" layoutX="78.0" layoutY="19.0" prefHeight="36.0" prefWidth="202.0" textAlignment="CENTER">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </content>

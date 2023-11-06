@@ -20,5 +20,6 @@
       <Button fx:id="deleteButton" layoutX="202.0" layoutY="58.0" mnemonicParsing="false" onAction="#onDeleteFileClick" prefHeight="26.0" prefWidth="56.0" text="Delete" />
       <ComboBox fx:id="langCBox" layoutX="470.0" layoutY="25.0" prefHeight="26.0" prefWidth="90.0" />
       <Label layoutX="470.0" layoutY="7.0" text="Language:" />
+      <Label layoutX="19.0" layoutY="42.0" text="TriLangCorp" />
    </children>
 </AnchorPane>

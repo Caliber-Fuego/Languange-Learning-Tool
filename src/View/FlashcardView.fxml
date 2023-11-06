@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FlashcardController">
     <children>
@@ -11,12 +15,34 @@
     <Button fx:id="wordListButton" layoutX="14.0" layoutY="185.0" mnemonicParsing="false" onAction="#onWordListClick" prefHeight="30.0" prefWidth="74.0" text="Word List" />
     <Button fx:id="addWordButton" layoutX="14.0" layoutY="259.0" mnemonicParsing="false" onAction="#onTextReadClick" prefHeight="30.0" prefWidth="74.0" text="Add Word" />
       <Button fx:id="flashcardButton" layoutX="14.0" layoutY="117.0" mnemonicParsing="false" onAction="#onFlashcardClick" prefHeight="30.0" prefWidth="74.0" text="Quiz" />
-      <Button fx:id="wordListButton11" layoutX="519.0" layoutY="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="66.0" text="Scores" />
-      <TableView layoutX="123.0" layoutY="60.0" prefHeight="304.0" prefWidth="391.0">
+      <TableView fx:id="listTable" layoutX="123.0" layoutY="60.0" prefHeight="304.0" prefWidth="391.0">
         <columns>
-          <TableColumn prefWidth="390.40001220703124" text="Word Lists" />
+          <TableColumn fx:id="listColumn" prefWidth="390.40001220703124" text="Word Lists" />
         </columns>
       </TableView>
-      <Button fx:id="wordListButton111" layoutX="519.0" layoutY="100.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="66.0" text="Lists" />
+      <TextField fx:id="quizAnswer" layoutX="123.0" layoutY="322.0" prefHeight="42.0" prefWidth="316.0" promptText="Enter answer">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </TextField>
+      <Label fx:id="labelNameA" layoutX="125.0" layoutY="290.0" text="Correct:" textFill="#32b432" />
+      <Label fx:id="labelNameB" layoutX="125.0" layoutY="305.0" text="Wrong:" textFill="RED" />
+      <Label fx:id="quizCorrect" layoutX="175.0" layoutY="290.0" text="0" textFill="#32b432" />
+      <Label fx:id="quizWrong" layoutX="175.0" layoutY="305.0" text="0" textFill="RED" />
+      <Button fx:id="answerButton" layoutX="442.0" layoutY="322.0" mnemonicParsing="false" onAction="#onAnswerClick" prefHeight="42.0" prefWidth="71.0" text="Answer" />
+      <ScrollPane fx:id="quizPane" layoutX="123.0" layoutY="60.0" prefHeight="226.0" prefWidth="391.0">
+        <content>
+          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="388.0" minHeight="0.0" minWidth="0.0" prefHeight="258.0" prefWidth="388.0">
+               <children>
+                  <Label fx:id="quizDefinition" alignment="TOP_CENTER" layoutX="3.0" layoutY="14.0" maxHeight="1.7976931348623157E308" maxWidth="388.0" prefHeight="475.0" prefWidth="388.0" textAlignment="JUSTIFY" wrapText="true">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+        </content>
+      </ScrollPane>
+      <Label layoutX="19.0" layoutY="51.0" text="TriLangCorp" />
     </children>
 </AnchorPane>

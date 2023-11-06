@@ -7,7 +7,7 @@ import javafx.scene.layout.Region;
 
 public class WordPopupController {
 
-    @FXML private Label labelWord, labelDefinition;
+    @FXML private Label labelWord, labelDefinition, labelHiragana;
     @FXML private  AnchorPane anchorPane;
 
     public void initialize() {
@@ -15,8 +15,9 @@ public class WordPopupController {
         labelDefinition.prefWidthProperty().bind(anchorPane.widthProperty().subtract(10));
     }
 
-    public void setWordAndDefinition(String word, String definition) {
+    public void setWordAndDefinition(String word, String definition, String hiragana) {
         labelWord.setText(word);
         labelDefinition.setText(definition);
+        labelHiragana.setText(hiragana);
     }
 }

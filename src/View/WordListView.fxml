@@ -51,5 +51,6 @@
       <TextField fx:id="searchBar" layoutX="123.0" layoutY="24.0" />
       <Button fx:id="flashcardButton" layoutX="14.0" layoutY="126.0" mnemonicParsing="false" onAction="#onFlashcardClick" prefHeight="30.0" prefWidth="74.0" text="Quiz" />
       <Button fx:id="deleteButton" layoutX="383.0" layoutY="24.0" mnemonicParsing="false" onAction="#onDeleteClick" prefHeight="26.0" prefWidth="87.0" text="Delete Word" />
+      <Label layoutX="19.0" layoutY="36.0" text="TriLangCorp" />
     </children>
 </AnchorPane>

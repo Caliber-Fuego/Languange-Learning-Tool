@@ -3,12 +3,9 @@ package Model;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Stack;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -216,7 +213,7 @@ public class wordBase {
             e.printStackTrace();
         }
     }
-
+/*
     public static String[] searchInDictionary(String word) {
         List<String> fileNames = new ArrayList<>();
         for (int i = 1; i <= 32; i++) {
@@ -225,7 +222,6 @@ public class wordBase {
 
         for (String fileName : fileNames) {
             LinkedList<TextReaderJPNode> nodes = readDataFromFile(fileName);
-            readDataFromFile2(fileName, word);
             for (TextReaderJPNode node : nodes) {
                 if (node.getWord().equals(word)) {
                     return new String[]{node.getHiraganaForm(), node.getDefinition()};
@@ -236,7 +232,26 @@ public class wordBase {
         return null;
     }
 
+ */
+
+    public static String[] searchInDictionary(String word) {
+        List<String> fileNames = new ArrayList<>();
+        for (int i = 1; i <= 32; i++) {
+            fileNames.add("src/Model/jmdict_english/term_bank_" + i + ".json");
+        }
+
+        for (String fileName : fileNames) {
+            String[] results = readDataFromFile(fileName, word);
+            if (results != null) {
+                return results; // Return the results if found
+            }
+        }
+
+        return null;
+    }
+
     //Reads data from the JSON Japanese Dictionary and gets it's definition and hiragana form
+    /*
     public static LinkedList<TextReaderJPNode> readDataFromFile(String fileName) {
         ObjectMapper objectMapper = new ObjectMapper();
         LinkedList<TextReaderJPNode> nodeList = new LinkedList<>();
@@ -270,8 +285,12 @@ public class wordBase {
         return nodeList;
     }
 
-    //TODO: Make this the main one instead of using the method that uses a jackson library
-    public static void readDataFromFile2(String fileName, String word) {
+     */
+
+    //Linearly searches for the Japanese Word inside a json file
+    public static String[] readDataFromFile(String fileName, String word) {
+        String[] wordTerm = null;
+
         try {
             // Provide the path to your JSON file
             FileReader reader = new FileReader(fileName);
@@ -284,39 +303,48 @@ public class wordBase {
             // Parse the JSON array
             JSONArray jsonArray = new JSONArray(jsonString.toString());
 
+            long start = System.nanoTime();
             // Iterate through the array and access the data
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONArray jsonEntry = jsonArray.getJSONArray(i);
                 String japaneseTerm = jsonEntry.getString(0);
 
-                if(japaneseTerm.equalsIgnoreCase(word)){
+                if(japaneseTerm.equals(word)){
+                    System.out.println("Word found");
+                    long end = System.nanoTime();
+                    System.out.println(fileName);
+                    System.out.println(word+" Search Time: "+(end - start) +" units");
+
+                    System.out.println(japaneseTerm);
                     String hiraganaForm = jsonEntry.getString(1);
                     JSONArray meanings = jsonEntry.getJSONArray(5);
 
-                    // Process meanings array if needed
-                    List<String> meaningList = new ArrayList<>();
+                    // Processes meanings array
+                    List<String> englishDefinition = new ArrayList<>();
                     for (int j = 0; j < meanings.length(); j++) {
                         String meaning = meanings.getString(j);
-                        meaningList.add(meaning);
+                        englishDefinition.add(j+1+".)"+meaning+"\n\n");
                     }
 
                     // Use the extracted data as needed
-                    System.out.println("Japanese Term: " + japaneseTerm);
-                    System.out.println("Hiragana Form: " + hiraganaForm);
-                    System.out.println("Meanings: " + meaningList);
-                    return;
+                    wordTerm = new String[]{japaneseTerm, hiraganaForm, englishDefinition.toString()};
+                    return wordTerm;
                 }
-
             }
+            long end = System.nanoTime();
+            System.out.println(fileName);
+            System.out.println(word+" Search Time: "+(end - start) +" units");
 
             reader.close();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
+
+        return wordTerm;
     }
 
 
-    // Function to fetch the definition with the api
+    // Function to fetch the definition with the api (For english words)
     public List<String> fetchDefinition(String word) {
         //Gets the API url and passes the received word on to it
         List<String> definitionList = new ArrayList<>();
@@ -378,5 +406,48 @@ public class wordBase {
         }
 
         return definitionList;
+    }
+
+    public String[] fetchRandomWordAndDefinition(String filename) {
+        String[] randomWord = null;
+
+        try {
+            String dbFilePath = executablePath + "Word Decks/"+filename;
+
+            List<String> words = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new FileReader(dbFilePath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    words.add(line);
+                }
+            }
+
+            // Pick a random word from the list
+            Random random = new Random();
+            int randomIndex = random.nextInt(words.size());
+            String randomLine = words.get(randomIndex);
+
+            String[] randomWordInfo = randomLine.split(",");
+            System.out.println(randomWordInfo[0]);
+            String wordLang = randomWordInfo[1];
+
+            String definitions = "";
+            switch (wordLang){
+                case "en":
+                    List<String> definitionList = fetchDefinition(randomWordInfo[0]);
+                    definitions = String.join("\n\n", definitionList);
+                    break;
+                case "jp":
+                    String[] jpWord = searchInDictionary(randomWordInfo[0]);
+                    definitions = jpWord[2].replaceAll("[\\[\\],]", "");
+            }
+
+            randomWord = new String[]{randomWordInfo[0], definitions};
+            return randomWord;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return randomWord;
     }
 }

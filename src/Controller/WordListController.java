@@ -34,7 +34,7 @@ public class WordListController {
 
     static wordBase wb = new wordBase();
     private Stack<String> wordHistory = new Stack<>();
-    private String wordData = "", definitionData = "";
+    private String wordData = "", definitionData = "", hiraganaData = "";
     public String getWordData() { return wordData; }
     public String getDefinitionData() { return definitionData; }
 
@@ -144,23 +144,24 @@ public class WordListController {
                             definitionData = String.join("\n\n", definitionList);
                             addToWordHistory(wordData, langData);
                             historyTableInitialize();
-                            popupShow(wordData, definitionData);
+                            popupShow(wordData, definitionData, hiraganaData);
 
                             break;
                         case "jp":
                             try{
                                 String[] result = wordBase.searchInDictionary(selectedWord.getWord());
                                 wordData = selectedWord.getWord();
-                                definitionData = "English Definitions: \n\n"+result[1].replaceAll("[\\[\\],]", "");
+                                definitionData = "English Definitions: \n\n"+result[2].replaceAll("[\\[\\],]", "");
+                                hiraganaData = result[1];
                                 addToWordHistory(wordData, langData);
                                 historyTableInitialize();
-                                popupShow(wordData, definitionData);
+                                popupShow(wordData, definitionData, hiraganaData);
                             }catch (NullPointerException e){
                                 wordData = selectedWord.getWord();
                                 definitionData = "No definitions found!";
                                 addToWordHistory(wordData, langData);
                                 historyTableInitialize();
-                                popupShow(wordData, definitionData);
+                                popupShow(wordData, definitionData, hiraganaData);
                             }
                             break;
                         default:
@@ -202,22 +203,23 @@ public class WordListController {
                             definitionData = String.join("\n\n", definitionList);
                             addToWordHistory(wordData, langData);
                             historyTableInitialize();
-                            popupShow(wordData, definitionData);
+                            popupShow(wordData, definitionData, hiraganaData);
                             break;
                         case "jp":
                             try{
                                 String[] result = wordBase.searchInDictionary(selectedWord.getWord());
                                 wordData = selectedWord.getWord();
-                                definitionData = "English Definitions: \n\n"+result[1].replaceAll("[\\[\\],]", "");
+                                definitionData = "English Definitions: \n\n"+result[2].replaceAll("[\\[\\],]", "");
+                                hiraganaData = result[1];
                                 addToWordHistory(wordData, langData);
                                 historyTableInitialize();
-                                popupShow(wordData, definitionData);
+                                popupShow(wordData, definitionData, hiraganaData);
                             }catch (NullPointerException e){
                                 wordData = selectedWord.getWord();
                                 definitionData = "No definitions found!";
                                 addToWordHistory(wordData, langData);
                                 historyTableInitialize();
-                                popupShow(wordData, definitionData);
+                                popupShow(wordData, definitionData, hiraganaData);
                             }
                             break;
                         default:
@@ -281,14 +283,14 @@ public class WordListController {
         });
     }
 
-    public void popupShow(String word, String definition) {
+    public void popupShow(String word, String definition, String hiragana) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/WordPopupView.fxml"));
             Parent root = loader.load();
             WordPopupController popupController = loader.getController();
 
             //Sets the text for both the word and definition
-            popupController.setWordAndDefinition(word, definition);
+            popupController.setWordAndDefinition(word, definition, hiragana);
 
             // Create a new Stage for the popup
             Stage popupStage = new Stage();

@@ -64,7 +64,6 @@ public class TextReader {
         }
 
         //If the word added is new, it adds it into the list
-        //TODO: create a temporary list to show the new words added in a popup
         if (isNewWord){
             TextReader newNode = new TextReader(word);
             newNode.setNext(list.isEmpty() ? null : list.getFirst());
@@ -73,7 +72,6 @@ public class TextReader {
                 wb.fileCheck(filename);
                 hold = list.getFirst().getWord();
                 wb.writeWordToFile(list.getFirst().getWord()+","+language+"\n");
-                //TODO: turn this into a popup and have it list the new words added
                 System.out.println("\""+list.getFirst().getWord()+"\" is added!");
             } catch (Exception e) {
                 e.printStackTrace();
