@@ -233,7 +233,8 @@ public class wordBase {
     }
 
  */
-
+    /*
+    // method for the linear search algorithm
     public static String[] searchInDictionary(String word) {
         List<String> fileNames = new ArrayList<>();
         for (int i = 1; i <= 32; i++) {
@@ -250,44 +251,47 @@ public class wordBase {
         return null;
     }
 
-    //Reads data from the JSON Japanese Dictionary and gets it's definition and hiragana form
-    /*
-    public static LinkedList<TextReaderJPNode> readDataFromFile(String fileName) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        LinkedList<TextReaderJPNode> nodeList = new LinkedList<>();
+    */
 
-        try {
-            // Parses the JSON file into a JsonNode
-            JsonNode rootNode = objectMapper.readTree(new File(fileName));
-
-            // Iterates over JSON Data and extracts information such as definition and hiragana
-            for (JsonNode node : rootNode) {
-                String word = node.get(0).asText();  // Japanese term
-                String hiraganaForm = node.get(1).asText();  // Hiragana form
-                JsonNode englishDefinition = node.get(5);
-                List <String> englishDefinitions = new ArrayList<>();
-
-                for(int i = 0; i < englishDefinition.size(); i++){
-                    englishDefinitions.add(i+1+".) "+node.get(5).get(i).asText()+"\n\n"); // English definition
-                }
-
-                TextReaderJPNode newNode = new TextReaderJPNode();
-                newNode.setWord(word);
-                newNode.setHiraganaForm(hiraganaForm);
-                newNode.setDefinition(englishDefinitions.toString());
-
-                nodeList.add(newNode);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    // Puts the files into a wordmap in sets
+    public static String[] searchInDictionary(String word) {
+        List<String> fileNames = new ArrayList<>();
+        for (int i = 1; i <= 32; i++) {
+            fileNames.add("src/Model/jmdict_english/term_bank_" + i + ".json");
         }
 
-        return nodeList;
+        List<String> currentFiles = new ArrayList<>();
+        int filesPerSet = 5;
+
+        for (String fileName : fileNames) {
+            currentFiles.add(fileName);
+
+            if (currentFiles.size() >= filesPerSet) {
+                Map<String, JSONArray> wordMap = insertDataIntoMap(currentFiles);
+                currentFiles.clear();
+
+                String[] results = readDataFromFile(wordMap, word);
+                if (results != null) {
+                    return results; // Return the results if found
+                }
+            }
+        }
+
+        // Check if there are any remaining files in the last set
+        if (!currentFiles.isEmpty()) {
+            Map<String, JSONArray> wordMap = insertDataIntoMap(currentFiles);
+            String[] results = readDataFromFile(wordMap, word);
+            if (results != null) {
+                return results; // Return the results if found
+            }
+        }
+
+        return null;
     }
 
-     */
 
     //Linearly searches for the Japanese Word inside a json file
+    /*
     public static String[] readDataFromFile(String fileName, String word) {
         String[] wordTerm = null;
 
@@ -342,6 +346,71 @@ public class wordBase {
 
         return wordTerm;
     }
+
+     */
+
+    //Inserts JSONArrays into a hashmap and then retrieves the definitions from the hashmaps directly through keys
+    public static String[] readDataFromFile(Map<String, JSONArray> wordMap, String word) {
+        String[] wordTerm = null;
+
+        String searchWord = word.toLowerCase();
+        JSONArray jsonEntry = wordMap.get(searchWord);
+
+        if (jsonEntry != null) {
+            long start = System.nanoTime();
+            String japaneseTerm = jsonEntry.getString(0);
+            String hiraganaForm = jsonEntry.getString(1);
+            JSONArray meanings = jsonEntry.getJSONArray(5);
+
+            long end = System.nanoTime();
+            System.out.println(searchWord+" Search Time: "+(end - start) +" units");
+
+            List<String> englishDefinition = new ArrayList<>();
+            for (int j = 0; j < meanings.length(); j++) {
+                String meaning = meanings.getString(j);
+                englishDefinition.add(j + 1 + ".)" + meaning + "\n\n");
+            }
+
+            wordTerm = new String[]{japaneseTerm, hiraganaForm, englishDefinition.toString()};
+        }
+
+        return wordTerm;
+    }
+
+    // Method that handles the JSONArray to HashMap insertion
+    public static Map<String, JSONArray> insertDataIntoMap(List<String> fileNames) {
+        Map<String, JSONArray> wordMap = new HashMap<>();
+
+        for (String fileName : fileNames) {
+            try {
+                FileReader reader = new FileReader(fileName);
+                StringBuilder jsonString = new StringBuilder();
+                int character;
+                while ((character = reader.read()) != -1) {
+                    jsonString.append((char) character);
+                }
+
+                JSONArray jsonArray = new JSONArray(jsonString.toString());
+
+                long start = System.nanoTime();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONArray jsonEntry = jsonArray.getJSONArray(i);
+                    String japaneseTerm = jsonEntry.getString(0);
+                    wordMap.put(japaneseTerm, jsonEntry);
+                }
+                long end = System.nanoTime();
+                System.out.println(fileName+"Array Objects Insertion Time: "+(end - start) +" units");
+
+                reader.close();
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return wordMap;
+    }
+
+
 
 
     // Function to fetch the definition with the api (For english words)
