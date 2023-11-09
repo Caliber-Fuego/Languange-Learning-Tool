@@ -1,6 +1,6 @@
 package Model;
 
-import java.util.LinkedList;
+import java.util.List;
 
 public class TextReader {
 
@@ -34,7 +34,7 @@ public class TextReader {
     public static String wordExtract(String text, String filename, String language){
         wb.fileCheck(filename);
         String hold = "";
-        LinkedList<TextReader> list = new LinkedList<>();
+        LinkedText<TextReader> list = new LinkedText<>();
 
         String[] words = text.split("[\\s、。]+");
         for (String word : words){
@@ -47,8 +47,30 @@ public class TextReader {
         return hold;
     }
 
+    public static String wordExtractJP(String text, String filename, String language) {
+        System.out.println("Extraction started");
+        wb.fileCheck(filename);
+        String hold = "";
+        LinkedText<TextReader> list = new LinkedText<>();
+        WordSegmenter segmenter = new WordSegmenter(); // Create an instance of WordSegmenter
+
+        System.out.println("Segmentation started");
+
+        // Split the input text into segments using the WordSegmenter
+        List<String> segments = segmenter.segmentTextWithKanji(text);
+
+        for (String segment : segments) {
+            segment = segment.replaceAll("[^a-zA-Z0-9'’ぁ-んァ-ヶー一-龠々〆ヵヶ]", "");
+            if (!segment.isEmpty()) {
+                hold += addWordToFile(segment, list, filename, language);
+            }
+        }
+
+        return hold;
+    }
+
     //Adds words to the file
-    public static String addWordToFile(String word, LinkedList<TextReader> list, String filename, String language){
+    public static String addWordToFile(String word, LinkedText<TextReader> list, String filename, String language){
         wb.readDataFromFile(list);
         String hold = "";
 
@@ -67,7 +89,7 @@ public class TextReader {
         if (isNewWord){
             TextReader newNode = new TextReader(word);
             newNode.setNext(list.isEmpty() ? null : list.getFirst());
-            list.addFirst(newNode);
+            list.addAtFirst(newNode);
             try {
                 wb.fileCheck(filename);
                 hold = list.getFirst().getWord();

@@ -70,8 +70,19 @@ public class TextReaderController {
     @FXML
     protected void onTextAddClick(){
         String lang = languageList();
+        String hold = "";
 
-        String hold = TextReader.wordExtract(txtReadField.getText(), wordListCBox.getValue().toString(), lang);
+        switch (lang){
+            case "en":
+                hold = TextReader.wordExtract(txtReadField.getText(), wordListCBox.getValue().toString(), lang);
+
+                break;
+            case "jp":
+                hold = TextReader.wordExtractJP(txtReadField.getText(), wordListCBox.getValue().toString(), lang);
+
+                break;
+        }
+
         popupNewWordsShow(hold);
     }
 

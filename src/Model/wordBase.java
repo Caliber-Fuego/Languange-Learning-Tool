@@ -50,7 +50,7 @@ public class wordBase {
     }
 
     //Reads data from a file and adds it on to a LinkedList
-    public void readDataFromFile(LinkedList<TextReader> list){
+    public void readDataFromFile(LinkedText<TextReader> list){
         try{
             BufferedReader bRead = new BufferedReader(new FileReader(file));
             String line;
@@ -60,7 +60,7 @@ public class wordBase {
 
                 TextReader newNode = new TextReader(word);
                 newNode.setNext(list.isEmpty() ? null : list.getFirst());
-                list.addFirst(newNode);
+                list.addAtFirst(newNode);
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -261,13 +261,13 @@ public class wordBase {
         }
 
         List<String> currentFiles = new ArrayList<>();
-        int filesPerSet = 5;
+        int filesPerSet = 1;
 
         for (String fileName : fileNames) {
             currentFiles.add(fileName);
 
             if (currentFiles.size() >= filesPerSet) {
-                Map<String, JSONArray> wordMap = insertDataIntoMap(currentFiles);
+                TextHashMap<String, JSONArray> wordMap = insertDataIntoMap(currentFiles);
                 currentFiles.clear();
 
                 String[] results = readDataFromFile(wordMap, word);
@@ -279,7 +279,7 @@ public class wordBase {
 
         // Check if there are any remaining files in the last set
         if (!currentFiles.isEmpty()) {
-            Map<String, JSONArray> wordMap = insertDataIntoMap(currentFiles);
+            TextHashMap<String, JSONArray> wordMap = insertDataIntoMap(currentFiles);
             String[] results = readDataFromFile(wordMap, word);
             if (results != null) {
                 return results; // Return the results if found
@@ -350,7 +350,7 @@ public class wordBase {
      */
 
     //Inserts JSONArrays into a hashmap and then retrieves the definitions from the hashmaps directly through keys
-    public static String[] readDataFromFile(Map<String, JSONArray> wordMap, String word) {
+    public static String[] readDataFromFile(TextHashMap<String, JSONArray> wordMap, String word) {
         String[] wordTerm = null;
 
         String searchWord = word.toLowerCase();
@@ -378,8 +378,8 @@ public class wordBase {
     }
 
     // Method that handles the JSONArray to HashMap insertion
-    public static Map<String, JSONArray> insertDataIntoMap(List<String> fileNames) {
-        Map<String, JSONArray> wordMap = new HashMap<>();
+    public static TextHashMap<String, JSONArray> insertDataIntoMap(List<String> fileNames) {
+        TextHashMap<String, JSONArray> wordMap = new TextHashMap<>();
 
         for (String fileName : fileNames) {
             try {
@@ -410,8 +410,45 @@ public class wordBase {
         return wordMap;
     }
 
+    public TextHashMap<String, JSONArray> insertDataIntoMap() {
+        System.out.println("Japanese insertion begins now");
 
+        List<String> fileNames = new ArrayList<>();
+        for (int i = 1; i <= 32; i++) {
+            fileNames.add("src/Model/jmdict_english/term_bank_" + i + ".json");
+        }
 
+        TextHashMap<String, JSONArray> wordMap = new TextHashMap<>();
+
+        for (String fileName : fileNames) {
+            try{
+                FileReader reader = new FileReader(fileName);
+                StringBuilder jsonString = new StringBuilder();
+                int character;
+                while ((character = reader.read()) != -1) {
+                    jsonString.append((char) character);
+                }
+
+                JSONArray jsonArray = new JSONArray(jsonString.toString());
+
+                long start = System.nanoTime();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONArray jsonEntry = jsonArray.getJSONArray(i);
+                    String japaneseTerm = jsonEntry.getString(0);
+                    wordMap.put(japaneseTerm, jsonEntry);
+                }
+                long end = System.nanoTime();
+                System.out.println(fileName+"Array Objects Insertion Time: "+(end - start) +" units");
+
+                reader.close();
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Japanese insertion completed");
+        return wordMap;
+    }
 
     // Function to fetch the definition with the api (For english words)
     public List<String> fetchDefinition(String word) {
